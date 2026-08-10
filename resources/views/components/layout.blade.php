@@ -15,6 +15,18 @@
 
         <title>{{ $title ? $title.' · ' : '' }}{{ config('app.name', 'Laravel') }}</title>
 
+        <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
+
+        <link rel="manifest" href="{{ route('manifest') }}">
+        <link rel="icon" href="{{ asset('icons/icon.svg') }}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}">
+
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="Charger">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])

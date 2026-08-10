@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ChargeController;
+use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
@@ -14,3 +15,5 @@ Route::resource('apartments', ApartmentController::class)->except('show');
 Route::get('report', [ReportController::class, 'index'])->name('report.index');
 
 Route::singleton('settings', SettingController::class)->only(['edit', 'update']);
+
+Route::get('manifest.webmanifest', ManifestController::class)->name('manifest');
