@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Models\MeterReading;
 use App\Models\Setting;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -19,12 +20,14 @@ class Layout extends Component
      */
     public function render(): View|Closure|string
     {
-        $setting = Setting::current();
+        $latestReading = MeterReading::mostRecent();
+        $chargedSince = $latestReading?->chargedSince();
 
         return view('components.layout', [
-            'meterReading' => $setting->meterReading(),
-            'chargedKwh' => $setting->chargedKwh(),
-            'rateLabel' => $setting->rateLabel(),
+            'latestReading' => $latestReading,
+            'chargedSince' => $chargedSince,
+            'meterReading' => $latestReading === null ? null : (float) $latestReading->reading + $chargedSince,
+            'rateLabel' => Setting::current()->rateLabel(),
         ]);
     }
 }

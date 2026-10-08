@@ -23,7 +23,6 @@ class UpdateSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'meter_start' => ['required', 'numeric', 'min:0', 'max:99999999'],
             'rate_per_kwh' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
@@ -34,7 +33,6 @@ class UpdateSettingRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'meter_start' => 'starting meter reading',
             'rate_per_kwh' => 'price per kWh',
         ];
     }

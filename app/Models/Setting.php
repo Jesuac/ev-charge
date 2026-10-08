@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['meter_start', 'rate_per_kwh'])]
+#[Fillable(['rate_per_kwh'])]
 class Setting extends Model
 {
     /**
@@ -13,23 +13,7 @@ class Setting extends Model
      */
     public static function current(): self
     {
-        return once(fn () => static::query()->first() ?? new static(['meter_start' => 0]));
-    }
-
-    /**
-     * The total kWh recorded across every charge.
-     */
-    public function chargedKwh(): float
-    {
-        return (float) Charge::query()->sum('kwh');
-    }
-
-    /**
-     * The meter's reading right now: the starting number plus everything logged since.
-     */
-    public function meterReading(): float
-    {
-        return (float) $this->meter_start + $this->chargedKwh();
+        return once(fn () => static::query()->first() ?? new static);
     }
 
     /**
@@ -50,7 +34,6 @@ class Setting extends Model
     protected function casts(): array
     {
         return [
-            'meter_start' => 'decimal:3',
             'rate_per_kwh' => 'decimal:4',
         ];
     }

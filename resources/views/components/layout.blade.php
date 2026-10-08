@@ -40,12 +40,17 @@
                 </a>
 
                 <div class="order-last flex w-full flex-wrap items-stretch gap-2 sm:order-none sm:w-auto">
-                    <a href="{{ route('settings.edit') }}"
-                       title="Meter reading — set the starting number in Settings"
+                    <a href="{{ route('meter-readings.index') }}"
+                       title="Expected meter reading — the last real reading plus what was logged since"
                        class="{{ $chip }}">
                         <span class="{{ $chipLabel }}">Meter</span>
-                        <span class="block text-base font-semibold tabular-nums">{{ number_format($meterReading, 2) }} kWh</span>
-                        <span class="block text-xs text-zinc-500 dark:text-zinc-400">+{{ number_format($chargedKwh, 2) }} since start</span>
+                        @if ($latestReading === null)
+                            <span class="block text-base font-semibold text-zinc-400 dark:text-zinc-500">No reading</span>
+                            <span class="block text-xs text-zinc-500 dark:text-zinc-400">add the first one</span>
+                        @else
+                            <span class="block text-base font-semibold tabular-nums">{{ number_format($meterReading, 2) }} kWh</span>
+                            <span class="block text-xs text-zinc-500 dark:text-zinc-400">+{{ number_format($chargedSince, 2) }} since {{ $latestReading->read_at->format('d M') }}</span>
+                        @endif
                     </a>
 
                     <a href="{{ route('settings.edit') }}"
@@ -64,6 +69,7 @@
                 <nav class="flex items-center gap-1">
                     <a href="{{ route('charges.index') }}" class="{{ $navLink(request()->routeIs('charges.*')) }}">Charges</a>
                     <a href="{{ route('report.index') }}" class="{{ $navLink(request()->routeIs('report.*')) }}">Report</a>
+                    <a href="{{ route('meter-readings.index') }}" class="{{ $navLink(request()->routeIs('meter-readings.*')) }}">Meter</a>
                     <a href="{{ route('apartments.index') }}" class="{{ $navLink(request()->routeIs('apartments.*')) }}">Apartments</a>
                     <a href="{{ route('settings.edit') }}" class="{{ $navLink(request()->routeIs('settings.*')) }}">Settings</a>
                 </nav>

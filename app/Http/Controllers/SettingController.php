@@ -10,17 +10,11 @@ use Illuminate\Http\RedirectResponse;
 class SettingController extends Controller
 {
     /**
-     * Show the form for editing the meter's starting reading and the price per kWh.
+     * Show the form for editing the price per kWh.
      */
     public function edit(): View
     {
-        $setting = Setting::current();
-
-        return view('settings.edit', [
-            'setting' => $setting,
-            'meterReading' => $setting->meterReading(),
-            'chargedKwh' => $setting->chargedKwh(),
-        ]);
+        return view('settings.edit', ['setting' => Setting::current()]);
     }
 
     /**
