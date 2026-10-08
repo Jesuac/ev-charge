@@ -1,3 +1,8 @@
+@php
+    $field = 'mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100';
+    $label = 'block text-sm font-medium text-zinc-700 dark:text-zinc-300';
+@endphp
+
 <x-layout title="Charges">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -9,6 +14,35 @@
            class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
             Add charge
         </a>
+    </div>
+
+    <div class="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <form method="GET" action="{{ route('charges.index') }}" class="flex flex-wrap items-end gap-4">
+            <div class="min-w-40 flex-1">
+                <label for="apartment_id" class="{{ $label }}">Apartment</label>
+                <select id="apartment_id" name="apartment_id" class="{{ $field }}">
+                    <option value="">All apartments</option>
+                    @foreach ($apartments as $apartment)
+                        <option value="{{ $apartment->id }}" @selected($selectedApartmentId === $apartment->id)>
+                            {{ $apartment->name }}@if ($apartment->resident_name) — {{ $apartment->resident_name }}@endif
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button type="submit"
+                    class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                Apply
+            </button>
+
+            @if ($selectedApartmentId !== null)
+                <a href="{{ route('charges.index') }}" class="py-2 text-sm font-medium text-zinc-500 underline-offset-4 hover:underline dark:text-zinc-400">Clear</a>
+            @endif
+        </form>
+
+        @error('apartment_id')
+            <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
     </div>
 
     <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -45,8 +79,12 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
-                                No charges recorded yet.
-                                <a href="{{ route('charges.create') }}" class="font-medium text-zinc-900 underline underline-offset-4 dark:text-white">Record the first one</a>.
+                                @if ($selectedApartmentId !== null)
+                                    No charges recorded for this apartment.
+                                @else
+                                    No charges recorded yet.
+                                    <a href="{{ route('charges.create') }}" class="font-medium text-zinc-900 underline underline-offset-4 dark:text-white">Record the first one</a>.
+                                @endif
                             </td>
                         </tr>
                     @endforelse

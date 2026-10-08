@@ -7,23 +7,38 @@ use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Apartment;
 use App\Models\Charge;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ChargeController extends Controller
 {
     /**
-     * Display the most recently recorded charges.
+     * Display the most recently recorded charges, optionally for a single apartment.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        $filters = $request->validate([
+            'apartment_id' => ['nullable', 'integer', Rule::exists('apartments', 'id')],
+        ]);
+
+        $selectedApartmentId = isset($filters['apartment_id']) ? (int) $filters['apartment_id'] : null;
+
         $charges = Charge::query()
             ->with('apartment')
+            ->when($selectedApartmentId, fn (Builder $query, int $apartmentId) => $query->where('apartment_id', $apartmentId))
             ->latest('charged_at')
             ->latest('id')
-            ->paginate(25);
+            ->paginate(25)
+            ->withQueryString();
 
-        return view('charges.index', ['charges' => $charges]);
+        return view('charges.index', [
+            'charges' => $charges,
+            'apartments' => $this->apartments(),
+            'selectedApartmentId' => $selectedApartmentId,
+        ]);
     }
 
     /**
@@ -76,7 +91,7 @@ class ChargeController extends Controller
     }
 
     /**
-     * The apartments available in the charge form's dropdown.
+     * The apartments available in the charge form and filter dropdowns.
      *
      * @return Collection<int, Apartment>
      */

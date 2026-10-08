@@ -89,3 +89,46 @@ test('the create form lists the apartments', function () {
         ->assertSee('1A')
         ->assertSee('2C');
 });
+
+test('the index shows only the selected apartment\'s charges', function () {
+    $apartment = Apartment::factory()->create();
+    Charge::factory()->for($apartment)->create(['kwh' => 11.11]);
+    Charge::factory()->create(['kwh' => 77.77]);
+
+    $this->get(route('charges.index', ['apartment_id' => $apartment->id]))
+        ->assertOk()
+        ->assertSee('11.11')
+        ->assertDontSee('77.77');
+});
+
+test('the index shows every charge when no apartment is selected', function () {
+    Charge::factory()->create(['kwh' => 11.11]);
+    Charge::factory()->create(['kwh' => 77.77]);
+
+    $this->get(route('charges.index', ['apartment_id' => '']))
+        ->assertOk()
+        ->assertSee('11.11')
+        ->assertSee('77.77');
+});
+
+test('the index rejects an unknown apartment filter', function () {
+    $this->get(route('charges.index', ['apartment_id' => 999]))
+        ->assertInvalid('apartment_id');
+});
+
+test('the index pagination keeps the apartment filter', function () {
+    $apartment = Apartment::factory()->create();
+    Charge::factory()->for($apartment)->count(26)->create();
+
+    $this->get(route('charges.index', ['apartment_id' => $apartment->id]))
+        ->assertOk()
+        ->assertSee('apartment_id='.$apartment->id.'&amp;page=2', false);
+});
+
+test('the index tells you when the selected apartment has no charges', function () {
+    $apartment = Apartment::factory()->create();
+
+    $this->get(route('charges.index', ['apartment_id' => $apartment->id]))
+        ->assertOk()
+        ->assertSee('No charges recorded for this apartment.');
+});
